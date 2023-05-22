@@ -1,0 +1,18 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model koala {
+  id          Int     @id @unique @default(autoincrement())
+  name        String  @db.VarChar
+  age         Int
+  description String  @db.VarChar
+  diet        String  @db.VarChar
+  extinct     Boolean
+  vacinated   Boolean
+}
