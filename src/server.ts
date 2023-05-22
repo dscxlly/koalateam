@@ -1,5 +1,6 @@
 import Fastify, { FastifyRequest, FastifyReply } from 'fastify';
-import { PrismaClient, koala } from "@prisma/client";
+import { Prisma, PrismaClient } from "@prisma/client";
+import { koala } from "@prisma/client";
 import cors from '@fastify/cors';
 import { request } from 'http';
 
@@ -10,7 +11,7 @@ app.register(cors, {
 });
 
 app.post('/create', async (request: FastifyRequest, reply: FastifyReply) => {
-    const { id, name, age, description, diet, extinct, vacinated } = request.body as koala;
+    const { id, name, age, description, diet, extinct, vaccinated } = request.body as koala;
     const koala = await prisma.koala.create({
         data: {
             id,
@@ -19,11 +20,12 @@ app.post('/create', async (request: FastifyRequest, reply: FastifyReply) => {
             description,
             diet,
             extinct,
-            vacinated
+            vaccinated
         },
     });
     reply.send('Koala created')
 });
+
 
 app.get('/koalas', async (request: FastifyRequest, reply: FastifyReply) => {
     const koalas = await prisma.koala.findMany();
@@ -43,6 +45,37 @@ app.get('/koalas/search', async (request: FastifyRequest, reply: FastifyReply) =
             },
         });
         reply.send(koalas);
+    } catch (error) {
+        console.error('Something went wrong:', error);
+    }
+});
+
+app.put('/koalas/:name', async (request: FastifyRequest, reply: FastifyReply) => {
+    const { name } = request.params as { name: string };
+    const koalaData = request.body as Prisma.koalaUpdateInput;;
+
+    try {
+        const updatedKoala = await prisma.koala.updateMany({
+            where: { name: name },
+            data: koalaData, 
+        });
+
+        reply.send('Koala updated!')
+    } catch (error) {
+        console.error('Something went wrong:', error);
+    }
+});
+
+app.delete('/koalas/:name', async (request: FastifyRequest, reply: FastifyReply) => {
+    const { name } = request.params as { name: string };
+
+    try {
+        const deletedKoala = await prisma.koala.deleteMany({
+            where: { name: name },
+        });
+
+        reply.send('Koala deleted.')
+
     } catch (error) {
         console.error('Something went wrong:', error);
     }

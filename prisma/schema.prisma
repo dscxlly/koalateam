@@ -14,5 +14,5 @@ model koala {
   description String  @db.VarChar
   diet        String  @db.VarChar
   extinct     Boolean
-  vacinated   Boolean
+  vaccinated  Boolean
 }
