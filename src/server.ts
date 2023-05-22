@@ -92,6 +92,3 @@ const start = async () => {
 };
 
 start();
-
-/*app.listen({ port: 3333 });
-console.log('Online')*/
