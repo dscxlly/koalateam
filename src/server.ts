@@ -1,6 +1,7 @@
 import Fastify, { FastifyRequest, FastifyReply } from 'fastify';
 import { PrismaClient, koala } from "@prisma/client";
 import cors from '@fastify/cors';
+import { request } from 'http';
 
 const prisma = new PrismaClient();
 const app = Fastify();
@@ -24,6 +25,28 @@ app.post('/create', async (request: FastifyRequest, reply: FastifyReply) => {
     reply.send('Koala created')
 });
 
+app.get('/koalas', async (request: FastifyRequest, reply: FastifyReply) => {
+    const koalas = await prisma.koala.findMany();
+    reply.send(koalas)
+})
+
+app.get('/koalas/search', async (request: FastifyRequest, reply: FastifyReply) => {
+    const { query } = request.query as { query: string };
+    try {
+        const koalas = await prisma.koala.findMany({
+            where: {
+                OR: [
+                    { name: { contains: query, mode: 'insensitive' } },
+                    { description: { contains: query, mode: 'insensitive' } },
+                    { diet: { contains: query, mode: 'insensitive' } },
+                ],
+            },
+        });
+        reply.send(koalas);
+    } catch (error) {
+        console.error('Something went wrong:', error);
+    }
+});
 
 const start = async () => {
     try {
